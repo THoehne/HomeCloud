@@ -1,0 +1,83 @@
+:root {
+    --accent-color: rgb(42, 42, 51);
+    --light-base-color: rgb(69, 69, 85);
+    --base-color: rgba(0, 0, 0, 0.5);
+    --matching-pink: #ffa3ff;
+    --turquoise-accent: #40E0D0;  
+    --black: black;
+}
+
+input {
+    border: none;
+    border-bottom: 3px solid black;
+    background-color: var(--accent-color);
+}
+
+input:focus {
+    box-shadow: none;
+    outline: none;
+    border-bottom: 3px solid white;
+}
+
+#action-form {
+    width: 100%;
+    height: 100%;
+}
+
+#filename-input {
+    width: 300px;
+    height: 30px;
+    margin-left: 70px;
+    
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+#filename-input:focus {
+    box-shadow: none;
+    outline: none;
+    border-bottom: 3px solid white;
+}
+
+#filecontent-input {
+    resize: none;
+    height: 100%;
+    width: calc(100% - 20px);
+    
+    margin-left: 10px;
+    font-size: 11pt;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#filecontent-input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+#tool-bar {
+    display: flex;
+    align-items: center;
+
+    width: calc(100% - 520px);
+    margin-left: 70px;
+    height: 100%;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    border-left: 1px solid white;
+}
+
+#font-size-input {
+    margin-left: 20px;
+}
+
+#text-wrap-toggle {
+    margin-left: 20px;
+    width: 120px;
+}
+
+#lock-toggle {
+    margin-left:  20px;
+}

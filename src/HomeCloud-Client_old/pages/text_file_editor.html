@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeCloud - ?</title>
+
+    <link rel="stylesheet" href="static/stylesheets/master.css">
+    <link rel="stylesheet" href="static/stylesheets/file_viewer.css">
+    <link rel="stylesheet" href="static/stylesheets/text_file_editor.css">
+</head>
+<body onload="generalSetup(); setup()">
+    <div id="dlg-blocking-overlay">
+
+    </div>
+    <div id="file-open-error-dlg" class="dlg">
+        <header>Error</header>
+        <span id="file-open-error-description" class="dlg-msg" style="color: red;"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="viewport.setDrive()">OK</div>
+        </div>
+    </div>
+    <div id="file-save-error-dlg" class="dlg" style="background-color: black;">
+        <header>Error</header>
+        <span id="file-save-error-description" class="dlg-msg" style="color: red;"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="closeDlg()">OK</div>
+        </div>
+    </div>
+
+    <div id="viewport-wrapper">
+        <header>
+            <input oninput="checkFileName(this)" onchange="changeFileTitle(this)" placeholder="Enter a filename ... " type="text" name="filename" id="filename-input" value="Loading file... ">
+            <div id="filepath" hidden="true">?</div>
+            <div id="tool-bar">
+                <button onclick="saveFile()" id="save-file-btn" class="button">
+                    Save
+                </button>
+                <button onclick="updateContent()" id="update-file-btn" class="button">
+                    Update
+                </button>
+                <div id="font-size-input" class="number-input" min="1" max="40" default="11">
+                </div>
+                <div id="text-wrap-toggle" class="toggle-button" on="true">
+                    Textwrap: on
+                </div>
+            </div>
+            <div id="editor-closer" onclick="viewport.setDrive()">
+                <img id="editor-closer-white" class="no-highlight" src="static/img/close.png" alt="" height="16px">
+                <img id="editor-closer-red" class="no-highlight" src="static/img/close_red.png" alt="" height="16px">
+            </div>
+        </header>
+        <div id="viewport-body">
+            <textarea name="filecontent" id="filecontent-input" wrap="soft"></textarea>
+        </div>
+    </div>
+</body>
+<script src="static/scripts/master.js" nonce="G1NavGGkId"></script>
+<script src="static/scripts/homecloud.api.js"></script>
+<script src="static/scripts/text_file_editor.js" nonce="GajaHb6Ff3"></script>
+</html>

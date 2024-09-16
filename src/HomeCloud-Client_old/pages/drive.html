@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="manifest" href="static/manifest.json">
+
+    <title>HomeCloud - /</title> 
+
+    <link rel="stylesheet" href="static/stylesheets/master.css">
+    <link rel="stylesheet" href="static/stylesheets/drive.css">
+</head>
+<body onload="setup(); generalSetup();">
+
+    <div id="dlg-blocking-overlay" draggable="false"></div>
+    
+    <div id="general-fileviewer-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="Dialog.openDlg('create-file-dlg');">
+            <span>Create New File</span>
+        </div>
+        <div class="context-menu-item" onclick="Dialog.openDlg('create-folder-dlg');">
+            <span>Create New Folder</span>
+        </div>
+        <div class="context-menu-item" onclick="Dialog.openDlg('file-upload-dlg'); document.getElementById('upload_progress_bar').getElementsByClassName('progress-bar-filling')[0].style.width = '0%';">
+            <span>Upload File</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(global_var.current_folder); showSnackbar('Info', 'Id successfully copied.', 5000);">
+            <span>Copy Folder Id</span>
+        </div>
+        <div class="context-menu-item" onclick="FileBrowserRenderer.renderPage()">
+            <span>Refresh</span>
+        </div>
+    </div>
+    <div id="folder-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="document.getElementById('rename-name-in-folder').value = global_var.current_selected_file.getElementsByClassName('file-filename')[0].innerText; Dialog.openDlg('rename-folder-dlg')">
+            <span>Rename</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="openDeleteFolderDlg()">
+            <span>Delete Folder</span>
+        </div>
+        <div class="context-menu-item" onclick="Dialog.openDlg('move-folder-dlg')">
+            <span>Move Folder</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(global_var.current_selected_file.getAttribute('file_id')); showSnackbar('Info', 'Id successfully copied.', 5000);">
+            <span>Copy Id</span>
+        </div>
+        <div class="context-menu-item" onclick="openFolderPropertiesDlg()">
+            <span>Properties</span>
+        </div>
+    </div>
+    <div id="file-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="document.getElementById('rename-name-in-file').value = global_var.current_selected_file.getElementsByClassName('file-filename')[0].innerText; Dialog.openDlg('rename-file-dlg')">
+            <span>Rename</span>
+        </div>
+        <div class="context-menu-item" onclick="FileBrowser.editFile()">
+            <span>Edit</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="downloadFile(global_var.current_selected_file.getAttribute('file_id'))">
+            <span>Download File</span>
+        </div>
+        <div class="context-menu-item" onclick="Dialog.openDlg('move-file-dlg');">
+            <span>Move File</span>
+        </div>
+        <div class="context-menu-item" onclick="openDeleteFileDlg()">
+            <span>Delete File</span>
+        </div>
+        <div class="context-menu-item" onclick="Dialog.openDlg('copy-file-dlg')">
+            <span>Copy File</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(global_var.current_selected_file.getAttribute('file_id')); showSnackbar('Info', 'Id successfully copied.', 5000);">
+            <span>Copy Id</span>
+        </div>
+        <div class="context-menu-item" onclick="openFilePropertiesDlg()">
+            <span>Properties</span>
+        </div>
+    </div>
+    <div id="input-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="cutTextFromInput(document.getElementById('input-context-menu').input_dom);">
+            <span>Cut</span>
+        </div>
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(window.getSelection().toString());">
+            <span>Copy</span>
+        </div>
+        <div class="context-menu-item" onclick="pasteTextFromClipboard(document.getElementById('input-context-menu').input_dom);">
+            <span>Paste</span>
+        </div>
+        <div class="context-menu-item" onclick="deleteTextFromInput(document.getElementById('input-context-menu').input_dom);">
+            <span>Delete</span>
+        </div>
+        <div class="context-menu-item" onclick="document.getElementById('input-context-menu').input_dom.select();">
+            <span>Select All</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="inputToggleSpellcheck(document.getElementById('input-context-menu').input_dom);">
+            <span>Spellcheck</span>
+        </div>
+    </div>
+
+    <div id="create-file-dlg" class="dlg">
+        <header>Create New File</header>
+        <input clean="true" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')" type="text" name="filename" id="create-file-name-in"
+            placeholder="Enter filename... " value="New File.txt" class="dlg-input">
+        <div id="filename-create-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgCreateFile()">Create</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg()">Cancel</div>
+        </div>
+    </div>
+    <div id="rename-file-dlg" class="dlg">
+        <header>Rename file</header>
+        <input clean="true" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')" type="text" name="filename" id="rename-name-in-file"
+            placeholder="Enter filename... " value="Other File.txt" class="dlg-input">
+        <div id="file-rename-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgRenameFile()">Rename</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg();">Cancel</div>
+        </div>
+    </div>
+    <div id="rename-folder-dlg" class="dlg">
+        <header>Rename folder</header>
+        <input clean="true" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')" type="text" name="filename" id="rename-name-in-folder"
+            placeholder="Enter filename... " value="Other Folder" class="dlg-input">
+        <div id="folder-rename-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgRenameFolder()">Rename</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg();">Cancel</div>
+        </div>
+    </div>
+    <div id="create-folder-dlg" class="dlg">
+        <header>Create New Folder</header>
+        <input clean="true" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')" type="text" name="foldername" id="create-folder-name-in"
+            placeholder="Enter foldername... " value="New Folder" class="dlg-input">
+        <div id="foldername-create-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgCreateFolder()">Create</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg()">Cancel</div>
+        </div>
+    </div>
+    <div id="delete-file-dlg" class="dlg">
+        <header>Delete File?</header>
+        <span id="delete-file-filename" class="dlg-msg"><i>unknown</i></span>
+        <div id="delete-file-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgDeleteFile()">Delete</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg()">Cancel</div>
+        </div>
+    </div>
+    <div id="delete-folder-dlg" class="dlg">
+        <header>Delete Folder?</header>
+        <span id="delete-folder-foldername" class="dlg-msg"><i>unknown</i></span>
+        <div id="delete-folder-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgDeleteFolder()">Delete</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg()">Cancel</div>
+        </div>
+    </div>
+    <div id="file-upload-dlg" class="dlg" style="height: 200px;">
+        <header>Upload file</header>
+        <div class="dlg-content-wrapper">
+            <input type="file" id="file-upload-dlg-file-input" class="dlg-input file-upload-btn" readonly>
+            <input type="text" id="file-upload-dlg-new-name-in" class="dlg-input" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')" placeholder="New Filename... ">
+        </div>
+        <div class="progress-wrapper">
+            <div class="progress-bar-border" id="upload_progress_bar">
+                <div class="progress-bar-inner-text" id="upload_progress_bar_inner_text"><span>Preparing file</span></div>
+                <div class="progress-bar-filling"></div>
+            </div>
+        </div>
+        <div id="upload-file-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgUploadFile()">Upload</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg(); if (global_var.process_is_running) { showSnackbar('Upload', 'Trying to cancel upload. Please don\'t close application.', 2000); global_var.cancel_current_process=true; global_var.process_is_running = false; }">Cancel</div>
+        </div>
+    </div>
+    <div id="folder-open-error-dlg" class="dlg">
+        <header>Error</header>
+        <span id="folder-open-error-description" class="dlg-msg" style="color: red;"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg()">OK</div>
+        </div>
+    </div>
+    <div id="download-file-dlg" class="dlg">
+        <header>Download progress</header>
+        <div class="progress-wrapper">
+            <div class="progress-bar-border" id="download_progress_bar">
+                <div class="progress-bar-inner-text"></div>
+                <div class="progress-bar-filling"></div>
+            </div>
+        </div>
+        <div id="download-file-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg(); if (global_var.process_is_running) { global_var.cancel_current_process=true; global_var.process_is_running=false; }">Cancel</div>
+        </div>
+    </div>
+    <div id="file-property-viewer" class="large-dlg">
+        <header>File properties</header>
+        <div class="large-dlg-content-wrapper">
+            <table class="dlg-table">
+                <thead>
+                    <th width="160px"></th>
+                    <th></th>
+                </thead>
+                <tr>
+                    <td class="large-dlg-table-property">Name:</td>
+                    <td id="file-property-viewer-name"><input type="text" id="file-property-viewer-file-name-input" onchange="file_property_change('name')" oninput="Tools.checkFileName(this, 'none', '1px solid red')"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">ID:</td>
+                    <td id="file-property-viewer-id" style="word-wrap: break-word" onclick="navigator.clipboard.writeText(this.innerText); showSnackbar('Info', 'Copied', 2000)" class="onclick-action"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Containing Folder:</td>
+                    <td id="file-property-viewer-containing-folder" style="word-wrap: break-word" onclick="navigator.clipboard.writeText(this.innerText); showSnackbar('Info', 'Copied', 2000)" class="onclick-action"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Created:</td>
+                    <td id="file-property-viewer-created"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Last changed:</td>
+                    <td id="file-property-viewer-last-changed"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Last opened:</td>
+                    <td id="file-property-viewer-last-opened"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">File type:</td>
+                    <td id="file-property-viewer-file-type"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Owner:</td>
+                    <td id="file-property-viewer-owner"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">File size:</td>
+                    <td id="file-property-viewer-file-size"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Is public:</td>
+                    <td id="file-property-viewer-public">
+                        <div class="checkbox-wrapper" id="file-property-viewer-is-public-checkbox">
+                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('is_public')" checked="false">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Allowed Users:</td>
+                    <td id="file-property-viewer-allowed-users">
+                        <div class="property-list">
+                            <div class="property-add-to-list" onclick="add_allowed_file_user()">
+                                <img src="static/img/plus-green.png" alt="Add new property." draggable="false" class="no-highlight">
+                            </div>
+                        </div>
+                    </td> 
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Description:</td>
+                    <td id="file-property-viewer-description"><textarea id="file-property-viewer-file-description-input" onchange="file_property_change('description')"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">File permissions:</td>
+                    <td id="file-property-viewer-perm">
+                        <table>
+                            <thead>
+                                <td>Entry</td>
+                                <td>Read</td>
+                                <td>Write</td>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="large-dlg-table-property">Owner</td>
+                                    <td class="large-dlg-table-property">
+                                        <div class="checkbox-wrapper" id="file-property-viewer-perm-owner-read">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="checkbox-wrapper" id="file-property-viewer-perm-owner-write">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="large-dlg-table-property">Group</td>
+                                    <td class="large-dlg-table-property">
+                                        <div class="checkbox-wrapper" id="file-property-viewer-perm-group-read">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="checkbox-wrapper" id="file-property-viewer-perm-group-write">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm');" checked="false">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="large-dlg-table-property">Public</td>
+                                    <td class="large-dlg-table-property">
+                                        <div class="checkbox-wrapper large-dlg-table-property" id="file-property-viewer-perm-public-read">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="checkbox-wrapper" id="file-property-viewer-perm-public-write">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="Dialog.closeDlg(); setFileProperties()">OK</div>
+            <div class="action-btn warning-act-btn" onclick="openFilePropertiesDlg(); global_var.file_property_change_list = []">Reset</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg(); global_var.file_property_change_list = []">Cancel</div>
+        </div>
+    </div>
+    <div id="username-grep-dlg" class="dlg">
+        <header>Get User by Id</header>
+        <input clean="true" type="text" name="filename" id="username-grep-id-in" placeholder="Enter User id" class="dlg-input">
+        <div id="username-grep-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="">OK</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg();">Cancel</div>
+        </div>
+    </div>
+    <div id="folder-property-viewer" class="large-dlg">
+        <header>Folder properties</header>
+        <div class="large-dlg-content-wrapper">
+            <table class="dlg-table">
+                <thead>
+                    <th width="160"></th>
+                    <th></th>
+                </thead>
+                <tr>
+                    <td class="large-dlg-table-property">Name:</td>
+                    <td id="folder-property-viewer-name"><input type="text" id="folder-property-viewer-folder-name-input" onchange="file_property_change('name')" oninput="Tools.checkFileName(this, 'none', '1px solid red')"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">ID:</td>
+                    <td id="folder-property-viewer-id" style="word-wrap: break-word" onclick="navigator.clipboard.writeText(this.innerText); showSnackbar('Info', 'Copied', 2000)" class="onclick-action"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Containing Folder:</td>
+                    <td id="folder-property-viewer-containing-folder" style="word-wrap: break-word" onclick="navigator.clipboard.writeText(this.innerText); showSnackbar('Info', 'Copied', 2000)" class="onclick-action"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Created:</td>
+                    <td id="folder-property-viewer-created"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Last changed:</td>
+                    <td id="folder-property-viewer-last-changed"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Folder type:</td>
+                    <td id="folder-property-viewer-folder-type"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Owner:</td>
+                    <td id="folder-property-viewer-owner"></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Is public:</td>
+                    <td id="folder-property-viewer-public">
+                        <div class="checkbox-wrapper" id="folder-property-viewer-is-public-checkbox">
+                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('is_public')" checked="false">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Allowed Users:</td>
+                    <td id="folder-property-viewer-allowed-users">
+                        <div class="property-list">
+                            <div class="property-add-to-list" onclick="add_allowed_folder_user()">
+                                <img src="static/img/plus-green.png" alt="Add new property." draggable="false" class="no-highlight">
+                            </div>
+                        </div>
+                    </td> 
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Description:</td>
+                    <td id="folder-property-viewer-description"><textarea id="folder-property-viewer-folder-description-input" onchange="file_property_change('description')"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="large-dlg-table-property">Folder permissions:</td>
+                    <td id="folder-property-viewer-perm">
+                        <table>
+                            <thead>
+                                <td>Entry</td>
+                                <td>Read</td>
+                                <td>Write</td>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="large-dlg-table-property">Owner</td>
+                                    <td class="large-dlg-table-property">
+                                        <div class="checkbox-wrapper" id="folder-property-viewer-perm-owner-read">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="checkbox-wrapper" id="folder-property-viewer-perm-owner-write">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="large-dlg-table-property">Group</td>
+                                    <td class="large-dlg-table-property">
+                                        <div class="checkbox-wrapper" id="folder-property-viewer-perm-group-read">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="checkbox-wrapper" id="folder-property-viewer-perm-group-write">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm');" checked="false">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="large-dlg-table-property">Public</td>
+                                    <td class="large-dlg-table-property">
+                                        <div class="checkbox-wrapper large-dlg-table-property" id="folder-property-viewer-perm-public-read">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="checkbox-wrapper" id="folder-property-viewer-perm-public-write">
+                                            <img src="" height="12px" width="12px" onclick="toggleCheck(this); file_property_change('perm')" checked="false">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="Dialog.closeDlg(); setFolderProperties()">OK</div>
+            <div class="action-btn warning-act-btn" onclick="openFolderPropertiesDlg(); global_var.file_property_change_list = []">Reset</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg(); global_var.file_property_change_list = []">Cancel</div>
+        </div>
+    </div>
+    <div id="move-file-dlg" class="dlg">
+        <header>Move File</header>
+        <div class="dlg-content-wrapper">
+            <input clean="true" type="text" name="filename" id="move-file-new-folder-id-in"
+                placeholder="Enter folder id... " class="dlg-input">
+            
+            <input clean="true" type="text" name="filename" id="move-file-new-name-in" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')"
+                placeholder="Enter new name... " class="dlg-input">
+                    
+        </div>
+        <div id="move-file-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgMoveFile()">Move</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg('move-file-dlg'); document.getElementById('move-file-new-folder-id-in').value = ''; document.getElementById('move-file-new-folder-id-in').style.display = 'block';">Cancel</div>
+        </div>
+    </div>
+    <div id="move-folder-dlg" class="dlg">
+        <header>Move Folder</header>
+        <div class="dlg-content-wrapper">
+            <input clean="true" type="text" name="foldername" id="move-folder-new-folder-id-in"
+                placeholder="Enter folder id... " class="dlg-input">
+            
+            <input clean="true" type="text" name="foldername" id="move-folder-new-name-in" oninput="Tools.checkFileName(this, '1px solid white', '1px solid red')"
+                placeholder="Enter new name... " class="dlg-input">
+                    
+        </div>
+        <div id="move-folder-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgMoveFolder()">Move</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg('move-folder-dlg'); document.getElementById('move-folder-new-folder-id-in').value = ''; document.getElementById('move-folder-new-folder-id-in').style.display = 'block';">Cancel</div>
+        </div>
+    </div>
+    <div id="copy-file-dlg" class="dlg">
+        <header>Copy File</header>
+        <input clean="true" type="text" name="folderid" id="copy-file-new-folder-id-in"
+            placeholder="Enter location folder id... " class="dlg-input">
+        <div id="copy-file-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="dlgCopyFile()">Copy</div>
+            <div class="action-btn cancel-act-btn" onclick="Dialog.closeDlg('copy-file-dlg'); document.getElementById('copy-file-new-folder-id-in').value = '';">Cancel</div>
+        </div>
+    </div>
+    <div id="info-dlg" class="dlg">
+        <header>Info</header>
+        <span id="info-description" class="dlg-msg"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="Dialog.closeDlg()">OK</div>
+        </div>
+    </div>
+    <div id="about-dlg" class="about-dlg">
+        <div class="icon-wrapper">
+            <img src="static/img/HomeCloud-Icon-white.png" alt="HomeCloud Icon" height="256" class="no-highlight">
+        </div>
+        <div class="info-wrapper">
+            <table width="400">
+                <tr>
+                    <td colspan="2">HomeCloud-Client</td>
+                </tr>
+                <tr>
+                    <td>Author:</td>
+                    <td>Thorben Höhne</td>
+                </tr>
+                <tr>
+                    <td>Version:</td>
+                    <td>1.0.0</td>
+                </tr>
+                <tr>
+                    <td>Node.js:</td>
+                    <td>21.5.0</td>
+                </tr>
+                <tr>
+                    <td>electron:</td>
+                    <td>26.6.3</td>
+                </tr>
+                <tr>
+                    <td>V8:</td>
+                    <td>11.8.172.17-node.18</td>
+                </tr>
+                <tr>
+                    <td>GitHub:</td>
+                    <td>https://github.com/scorpioblood</td>
+                </tr>
+            </table>
+        </div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="Dialog.closeDlg()">OK</div>
+        </div>
+    </div>
+    <div id="account-settings-dlg" class="large-dlg">
+        <header>Account</header>
+        <div class="large-dlg-content-wrapper">
+            <table class="dlg-table">
+                <thead>
+                    <th width="160px"></th>
+                    <th></th>
+                </thead>
+                <tr>
+                    <td>Username:</td>
+                    <td id="account-settings-dlg-username" onclick="navigator.clipboard.writeText(this.getAttribute('copy_data')); showSnackbar('Info', 'Copied', 2000)" class="onclick-action">{Name}</td>
+                </tr>
+                <tr>
+                    <td>User Group:</td>
+                    <td id="account-settings-dlg-usergroup" onclick="navigator.clipboard.writeText(this.getAttribute('copy_data')); showSnackbar('Info', 'Copied', 2000)" class="onclick-action">{Group Name}</td>
+                </tr>
+                <tr>
+                    <td>Root folder id:</td>
+                    <td id="account-settings-dlg-root-folder-id" onclick="navigator.clipboard.writeText(this.innerText); showSnackbar('Info', 'Copied', 2000)" class="onclick-action" style="word-wrap: break-word;">{root_folder_id}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="Dialog.closeDlg();">OK</div>
+        </div>
+    </div>
+
+    <div id="snackbar" class="snackbar">
+        <div class="snackbar-content">
+            <header></header>
+            <div class="snackbar-text"></div>
+        </div>
+        <div class="close-btn-wrapper">
+            <div>
+                <img class="close-btn no-highlight" src="static/img/close.png" alt="Close snackbar." height="16px" draggable="false">
+                <img class="close-btn-active no-highlight" src="static/img/close_red.png" alt="Close snackbar." height="16px" onclick="document.getElementById('snackbar').classList.remove('open');" draggable="false">
+            </div>
+        </div>
+    </div>
+
+    <!-- <div id="discrete-side-menu" class="hidden active">
+        <div id="discrete-side-menu-btns">
+            <span class="menu-link" onclick="QuickDlg.loadAccountDlg(); Menu.close_menu()">Account</span>
+            <span class="menu-link" onclick="Dialog.openDlg('about-dlg'); Menu.close_menu()">About</span>
+            <span class="menu-link" onclick="logout()" style="margin-top: calc(50% - 100px)">Logout</span>
+        </div>
+        <div onclick="Menu.toggle_open_menu();" id="discrete-side-menu-open-close-btn">
+            <img src="static/img/right-arrow-head.png" alt="Open side menu" height="16px">
+        </div>
+    </div> -->
+
+    <div id="viewport-wrapper">
+
+        
+        <div id="menu-bar">
+            <p onclick="QuickDlg.loadAccountDlg()">Account</p>
+            <p onclick="Dialog.openDlg('about-dlg')">About</p>
+            <p id="admin_panel_btn" style="display: none;" onclick="viewport.setAdminPanel()">Admin Panel</p>
+            <p onclick="logout()">Logout</p>
+        </div>
+
+        <header>
+            <div id="header-logo-text-wrapper">
+                <h1>HomeCloud</h1>
+                <div id="header-path-viewer"><span id="header-path-viewer-username">Loading...</span><span id="header-path-viewer-path"></span></div>
+            </div>
+
+            <div id="header-logout-wrapper">
+                <!-- <a onclick="logout()">Logout</a> -->
+                <!-- <a onclick="viewport.setDrive()">Reload style</a> -->
+            </div>
+
+        </header>
+
+        <div id="file-viewport">
+            <div id="file-viewport-file-viewer">
+                <div id="file-viewport-file-viewer-header">
+                    <div class="file-filename">Filename</div>
+                    <div class="file-fileowner">Owner</div>
+                    <div class="file-lastchanged">Last Changed</div>
+                    <div class="file-filesize">Filesize</div>
+                </div>
+                <div id="file-viewport-file-viewer-body">
+                    <div id="go-back-btn" onclick="FileBrowser.goToPrevFolder()" class="file">
+                        <div><img id="goback-arrow-white" src="static/img/arrow-left-white.png" width="24" height="24" draggable="false"><img id="goback-arrow-turquoise" src="static/img/arrow-left-turquoise.png" width="24" height="24" draggable="false"></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div id="file-viewport-file-viewer-body-skeletons">
+                        <div class="file file-skeleton">
+                            <div class="file-icon-skeleton"></div>
+                            <div><div class="file-filename-skeleton"></div></div>
+                            <div><div class="file-fileowner-skeleton"></div></div>
+                            <div><div class="file-lastchanged-skeleton"></div></div>
+                            <div><div class="file-filesize-skeleton"></div></div>
+                        </div>
+                        <div class="file file-skeleton">
+                            <div class="file-icon-skeleton"></div>
+                            <div><div class="file-filename-skeleton"></div></div>
+                            <div><div class="file-fileowner-skeleton"></div></div>
+                            <div><div class="file-lastchanged-skeleton"></div></div>
+                            <div><div class="file-filesize-skeleton"></div></div>
+                        </div>
+                        <div class="file file-skeleton">
+                            <div class="file-icon-skeleton"></div>
+                            <div><div class="file-filename-skeleton"></div></div>
+                            <div><div class="file-fileowner-skeleton"></div></div>
+                            <div><div class="file-lastchanged-skeleton"></div></div>
+                            <div><div class="file-filesize-skeleton"></div></div>
+                        </div>
+                        <div class="file file-skeleton">
+                            <div class="file-icon-skeleton"></div>
+                            <div><div class="file-filename-skeleton"></div></div>
+                            <div><div class="file-fileowner-skeleton"></div></div>
+                            <div><div class="file-lastchanged-skeleton"></div></div>
+                            <div><div class="file-filesize-skeleton"></div></div>
+                        </div>
+                    </div>
+                    <div id="file-viewport-file-viewer-body-folders">
+                        
+                    </div>
+                    <div id="file-viewport-file-viewer-body-files">
+
+                    </div>
+                </div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+    </div>
+    
+</body>
+<script src="static/scripts/master.js" nonce="G1NavGGkId"></script>
+<script src="static/scripts/homecloud.api.js" nonce="myfRp03UAJ"></script>
+<script src="static/scripts/drive.js" nonce="k0NlmfDqlc"></script>
+</html>
+
+<!-- https://www.flaticon.com/de/kostenlose-icons/mappe -->

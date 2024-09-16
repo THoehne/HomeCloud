@@ -1,0 +1,19 @@
+:root {
+    --accent-color: rgb(42, 42, 51);
+    --light-base-color: rgb(69, 69, 85);
+    --base-color: rgba(0, 0, 0, 0.5);
+    --matching-pink: #ffa3ff;
+    --turquoise-accent: #40E0D0;  
+    --black: black;
+}
+
+#viewport-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#viewport-body > img {
+    padding: 5px;
+    border: 1px solid white;
+}

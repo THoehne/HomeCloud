@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeCloud - Login</title>
+
+    <link rel="stylesheet" href="static/stylesheets/master.css">
+    <link rel="stylesheet" href="static/stylesheets/login.css">
+</head>
+<body>
+    <div id="login-field">
+        <div id="login-field-header">
+            <h2>Login</h2>
+        </div>
+        <div id="login-field-content-pane">
+            <input type="text" placeholder="Server" id="server-domain-in">
+            <input type="text" placeholder="Username" id="username-in">
+            <input type="password" placeholder="Password" id="password-in">
+            <div><div id="remember-me-checkbox-wrapper" class="checkbox-wrapper"><img src="" height="12px" width="12px" onclick="toggleCheck(this)" checked="false"></div><span>Remember Me</span></div>
+            <div id="login-field-content-pane-login-error"></div>
+        </div>
+        <div id="login-field-footer">
+            <button id="login-field-footer-continue-btn">
+                <span class="">Continue</span>
+                <img src="static/img/loading.png" alt="loading" height="24px" class="">
+            </button>
+        </div>
+    </div>
+</body>
+<script src="static/scripts/master.js" nonce="G1NavGGkId"></script>
+<script src="static/scripts/login.js" nonce="qFQDbLkxEE"></script>
+</html>

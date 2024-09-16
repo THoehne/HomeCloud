@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeCloud - ?</title>
+
+    <link rel="stylesheet" href="static/stylesheets/master.css">
+    <link rel="stylesheet" href="static/stylesheets/file_viewer.css">
+    <link rel="stylesheet" href="static/stylesheets/image-viewer.css">
+</head>
+<body onload="generalSetup(); setup()">
+    <div id="dlg-blocking-overlay">
+
+    </div>
+    <div id="file-open-error-dlg" class="dlg">
+        <header>Error</header>
+        <span id="file-open-error-description" class="dlg-msg" style="color: red;"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="viewport.setDrive()">OK</div>
+        </div>
+    </div>
+    <div id="file-save-error-dlg" class="dlg" style="background-color: black;">
+        <header>Error</header>
+        <span id="file-save-error-description" class="dlg-msg" style="color: red;"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="closeDlg()">OK</div>
+        </div>
+    </div>
+
+    <div id="viewport-wrapper">
+        <header>
+            <div style="width: calc(100% - 60px);"></div>
+            <div id="editor-closer" onclick="viewport.setDrive()">
+                <img id="editor-closer-white" class="no-highlight" src="static/img/close.png" alt="" height="16px">
+                <img id="editor-closer-red" class="no-highlight" src="static/img/close_red.png" alt="" height="16px">
+            </div>
+        </header>
+        <div id="viewport-body">
+            <img id="image-viewport" class="no-highlight" alt="Opened Image" draggable="false">
+        </div>
+    </div>
+</body>
+<script src="static/scripts/master.js" nonce="G1NavGGkId"></script>
+<script src="static/scripts/image_viewer.js" nonce="ceqmOvFG6F"></script>
+</html>

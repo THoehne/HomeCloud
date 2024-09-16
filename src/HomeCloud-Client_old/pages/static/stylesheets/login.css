@@ -1,0 +1,142 @@
+:root {
+    --accent-color: purple;
+    --light-base-color: rgb(69, 69, 85);
+    /* --base-color: rgb(42, 42, 51); */
+    --base-color: rgba(0, 0, 0, 0.5);
+    --matching-pink: #ffa3ff;
+    --black: black;
+}
+
+.preload {
+    transition: none !important;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    height: 100%;
+}
+
+#login-field {
+    display: block;
+    justify-content: center;
+    align-items: center;
+
+    width: 700px;
+    height: 400px;
+
+    border: 1px solid grey;
+    border-radius: 12px;
+    background-color: var(--base-color);
+}
+
+#login-field-header {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    width: 100%;
+    height: 30%;
+
+    font-size: 2em;
+    /* border-bottom: 1px solid white; */
+}
+
+#login-field-content-pane {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 47%;
+    margin-top: 10px;
+    /* border: 1px solid red; */
+}
+
+#login-field-content-pane input {
+    padding: 5px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background-color: rgba(0,0,0,0);
+    width: 500px;
+}
+
+#login-field-content-pane input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+#login-field-content-pane > div {
+    /* border: 1px solid red; */
+    display: flex;
+    align-items: center;
+    cursor: default;
+}
+
+#login-field-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 30%;
+}
+
+#login-field-footer-continue-btn {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    
+    align-self: self-start;
+    border: none;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: medium;
+    font-weight: bold;
+    padding-left: 150px;
+    padding-right: 150px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    transition-property: padding;
+    transition-duration: 1s;
+}
+
+#login-field-footer-continue-btn > img {
+    display: none;
+}
+
+#login-field-footer-continue-btn > span.hidden {
+    display: none;
+}
+
+
+#login-field-footer-continue-btn > img.shown {
+    display: block;
+
+    animation-name: loading_anim;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+#login-field-footer-continue-btn:hover {
+    transition-property: padding;
+    transition-duration: 1s;
+    cursor: pointer;
+    padding-left: 250px;
+    padding-right: 250px;
+}
+
+#login-field-content-pane-login-error {
+    color: red
+}
+
+@keyframes loading_anim {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}

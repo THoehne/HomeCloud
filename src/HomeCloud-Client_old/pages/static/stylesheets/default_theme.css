@@ -1,0 +1,35 @@
+:root {
+    --accent-color: purple;
+    --sec-accent-color: #40E0D0;  
+
+    --light-base-color: rgb(69, 69, 85);
+    --base-color: rgb(32, 32, 32);
+    
+    --default-font-color: white;
+    
+    --input-border-color: white;
+
+    --context-bg-color: rgb(32, 32, 32);
+    --context-border-color: grey;
+    --context-hover-color: purple;
+    --context-hover-text-color: white;
+    --context-active-color: rgba(255, 255, 255, 0.3);
+
+    --onclick-action-active: grey;
+    
+    --action-btn-execute: rgb(32, 32, 32);
+    --action-btn-cancel: rgb(32, 32, 32);
+    --action-btn-warning: rgb(32, 32, 32);
+    --action-btn-hover-execute: green;
+    --action-btn-hover-cancel: red;
+    --action-btn-hover-warning: chocolate;
+
+    --interactive-color: rgb(42, 42, 51);
+    --interactive-active-color: black;
+    --interactive-hover-color: rgb(69, 69, 85);
+    --interactive-border-color: grey;
+
+    --viewport-color: rgba(0, 0, 0, 0.5);
+    --background-color: rgb(32, 32, 32);
+    --background-img: none;
+}

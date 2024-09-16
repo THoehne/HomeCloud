@@ -1,0 +1,15 @@
+{
+  "name": "homecloud-client",
+  "version": "2.0.0",
+  "description": "Client for HomeCloud-API",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thorben Höhne",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.2.0"
+  }
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeCloud - Admin</title>
+
+    <link rel="stylesheet" href="static/stylesheets/master.css">
+    <link rel="stylesheet" href="static/stylesheets/admin-panel.css">
+</head>
+<body onload="setup()">
+    <div id="snackbar" class="snackbar">
+        <div class="snackbar-content">
+            <header></header>
+            <div class="snackbar-text"></div>
+        </div>
+        <div class="close-btn-wrapper">
+            <div>
+                <img class="close-btn no-highlight" src="static/img/close.png" alt="Close snackbar." height="16px" draggable="false">
+                <img class="close-btn-active no-highlight" src="static/img/close_red.png" alt="Close snackbar." height="16px" onclick="document.getElementById('snackbar').classList.remove('open');" draggable="false">
+            </div>
+        </div>
+    </div>
+
+    <div id="input-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="cutTextFromInput(document.getElementById('input-context-menu').input_dom);">
+            <span>Cut</span>
+        </div>
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(window.getSelection().toString());">
+            <span>Copy</span>
+        </div>
+        <div class="context-menu-item" onclick="pasteTextFromClipboard(document.getElementById('input-context-menu').input_dom);">
+            <span>Paste</span>
+        </div>
+        <div class="context-menu-item" onclick="deleteTextFromInput(document.getElementById('input-context-menu').input_dom);">
+            <span>Delete</span>
+        </div>
+        <div class="context-menu-item" onclick="document.getElementById('input-context-menu').input_dom.select();">
+            <span>Select All</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="inputToggleSpellcheck(document.getElementById('input-context-menu').input_dom);">
+            <span>Spellcheck</span>
+        </div>
+    </div>
+
+    <div id="general-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="openDlg('add-user-dlg')">
+            <span>Add user</span>
+        </div>
+    </div>
+
+    <div id="user-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="dlgLoadSetUserProperties()">
+            <span>Properties</span>
+        </div>
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(global_var.current_row.getAttribute('user_id'))">
+            <span>Copy id</span>
+        </div>
+        <div class="context-menu-splitter"></div>
+        <div class="context-menu-item" onclick="removeUser();">
+            <span>Remove user</span>
+        </div>
+    </div>
+
+    <div id="group-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="navigator.clipboard.writeText(global_var.current_row.getAttribute('group_id'))">
+            <span>Copy id</span>
+        </div>
+    </div>
+
+
+    <div id="dlg-blocking-overlay" draggable="false"></div>
+    <div id="error-dlg" class="dlg">
+        <header>Error</header>
+        <span id="error-description" class="dlg-msg" style="color: red;"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="closeDlg();">OK</div>
+        </div>
+    </div>
+    
+    <div id="accept-dlg" class="dlg">
+        <header>Do you really want to do this?</header>
+        <span id="accept-description" class="dlg-msg"><i>unknown</i></span>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="closeDlg();">OK</div>
+            <div class="action-btn cancel-act-btn" onclick="closeDlg();">Cancel</div>
+        </div>
+    </div>
+
+    <div id="add-user-dlg" class="large-dlg">
+        <header>Add user</header>
+        <div class="large-dlg-content-wrapper">
+            <table class="dlg-table">
+                <thead>
+                    <th width="160"></th>
+                    <th></th>
+                </thead>
+                <tr>
+                    <td>Username:</td>
+                    <td id="add-user-name"><input type="text" id="add-user-name-input" placeholder="Username"></td>
+                </tr>
+                <tr>
+                    <td>Group id:</td>
+                    <td>
+                        <div id="add-user-groupname-list" class="property-list">
+                            <div class="property-add-to-list" onclick="add_user_add_group_id()">
+                                <img src="static/img/plus-green.png" alt="Add new property." draggable="false" class="no-highlight">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="closeDlg(); dlgAddUser();">OK</div>
+            <div class="action-btn cancel-act-btn" onclick="closeDlg(); document.getElementById('add-user-name-input').value = '';">Cancel</div>
+        </div>
+    </div>
+
+    <div id="set-user-properties-dlg" class="large-dlg">
+        <header>Add user</header>
+        <div class="large-dlg-content-wrapper">
+            <table class="dlg-table">
+                <thead>
+                    <th width="160"></th>
+                    <th></th>
+                </thead>
+                <tr>
+                    <td>Username:</td>
+                    <td id="set-user-properties-name"><input onchange="add_to_change_list('username')" type="text" id="set-user-properties-name-input" placeholder="Username"></td>
+                </tr>
+                <tr>
+                    <td>New Password:</td>
+                    <td id="set-user-properties-password-name"><input onchange="add_to_change_list('password')" type="text" id="set-user-properties-password-input" placeholder="Password"></td>
+                </tr>
+                <tr>
+                    <td>Group id:</td>
+                    <td>
+                        <div id="set-user-properties-group-id-list" class="property-list">
+                            <div class="property-add-to-list" onclick="set_user_properties_set_group()">
+                                <img src="static/img/plus-green.png" alt="Add new property." draggable="false" class="no-highlight">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn cancel-act-btn" onclick="closeDlg(); dlgSetUserProperties();">OK</div>
+            <div class="action-btn cancel-act-btn" onclick="closeDlg(); document.getElementById('add-user-name-input').value = ''; global_var.user_change_list = [];">Cancel</div>
+        </div>
+    </div>
+
+    <div id="groupname-grep-dlg" class="dlg">
+        <header>Get Group by Id</header>
+        <input clean="true" type="text" id="groupname-grep-id-in" placeholder="Enter Group id" class="dlg-input">
+        <div id="groupname-grep-error" class="dlg-error">Error</div>
+        <div class="dlg-action-wrapper">
+            <div class="action-btn execute-act-btn" onclick="">OK</div>
+            <div class="action-btn cancel-act-btn" onclick="document.getElementById('add-user-dlg').style.visibility = 'visible'; document.getElementById('groupname-grep-dlg').style.display = 'none';">Cancel</div>
+        </div>
+    </div>
+
+
+    <div id="viewport-wrapper">
+        <div id="menu-bar">
+            <p onclick="viewport.setDrive()">Back to Dashboard</p>
+        </div>
+
+
+        <div id="notpad-select" class="toolbar" style="border-top: 1px solid grey;">
+            <p onclick="showUsers()" class="active">Users</p>
+            <p onclick="showGroups()">Groups</p>
+        </div>
+
+        <div id="viewport">
+
+                <div id="user-th" class="table-header">
+                    <p>Username</p>
+                    <p>Group</p>
+                    <p>Root directory</p>
+                </div>
+
+                <div id="group-th" class="table-header">
+                    <p>Group name</p>
+                    <p>Is admin</p>
+                </div>
+
+        </div>
+    </div>
+</body>
+<script src="static/scripts/master.js"></script>
+<script src="static/scripts/homecloud.api.js" nonce="myfRp03UAJ"></script>
+<script src="static/scripts/admin.js"></script>
+</html>

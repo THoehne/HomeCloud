@@ -1,0 +1,30 @@
+/* 
+*   This file contains general style convention applied in all CrimsonDawn Themes.
+*
+*   Copyright © 2024 Thorben Höhne, All rights reserved.
+*/
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+
+:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 100%;
+    width: 100%;
+}

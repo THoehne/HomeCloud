@@ -1,0 +1,32 @@
+{
+  "name": "homecloud-client",
+  "version": "1.0.0",
+  "description": "Graphical Client for HomeCloud API.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [
+    "HomeCloud"
+  ],
+  "author": "Thorben Höhne",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.3.0",
+    "@electron-forge/maker-deb": "^7.3.0",
+    "@electron-forge/maker-rpm": "^7.3.0",
+    "@electron-forge/maker-squirrel": "^7.3.0",
+    "@electron-forge/maker-zip": "^7.3.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.3.0",
+    "@electron-forge/plugin-fuses": "^7.3.0",
+    "electron": "^26.1.0"
+  },
+  "dependencies": {
+    "@pdftron/webviewer": "^10.4.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "npm": "^10.2.5"
+  }
+}
